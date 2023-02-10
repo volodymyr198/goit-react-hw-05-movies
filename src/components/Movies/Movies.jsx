@@ -1,11 +1,12 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
+import { ImSearch } from 'react-icons/im';
+import { FcFilmReel } from 'react-icons/fc';
 
 import { getSearchMovie } from 'api/movies';
-import { useState, useEffect } from 'react';
-
 import css from './Movies.module.css';
 
-export const Movies = () => {
+const Movies = () => {
     const [state, setState] = useState({
         items: [],
         loading: false,
@@ -16,6 +17,7 @@ export const Movies = () => {
     const query = searchParams.get('query');
 
     const [search, setSearch] = useState(() => query || '');
+    const location = useLocation();
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -48,12 +50,6 @@ export const Movies = () => {
 
     const { items, loading, error } = state;
 
-    const elements = items.map(({ id, original_title }) => (
-        <li key={id}>
-            <Link to={`/movies/${id}`}>{original_title}</Link>
-        </li>
-    ));
-
     const handleChange = ({ target }) => {
         setSearch(target.value);
     };
@@ -65,26 +61,46 @@ export const Movies = () => {
         }
     };
 
+    const elements = items.map(({ id, original_title }) => (
+        <li key={id} className={css.search__item}>
+            <FcFilmReel className={css.svg} />
+            <Link state={{ from: location }} to={`/movies/${id}`}>
+                {original_title}
+            </Link>
+        </li>
+    ));
     return (
-        <div>
-            <form onSubmit={handleSubmit} className={css.searchForm}>
-                <label>
-                    <input
-                        onChange={handleChange}
-                        type="text"
-                        name="search"
-                        value={search}
-                        placeholder="Search Movies"
-                        required
-                    />
-                    <button type="sabmit">Search</button>
-                </label>
+        <div className={css.wrapper}>
+            <form
+                onSubmit={handleSubmit}
+                className={css.searchForm}
+                autoComplete="off"
+            >
+                <input
+                    className={css.searchForm__input}
+                    onChange={handleChange}
+                    type="text"
+                    name="search"
+                    value={search}
+                    placeholder="Search Movies"
+                    required
+                />
+                <button className={css.searchForm__btn} type="sabmit">
+                    <ImSearch />
+                </button>
             </form>
             {search && items.length > 0 && !loading && !error && (
                 <ul>{elements}</ul>
             )}
-            {loading && <p>...load movies</p>}
-            {error && <p>...Movies load filed</p>}
+            {loading && <p className={css.default}>...load movies</p>}
+            {error && <p className={css.default}>...Movies load filed</p>}
+            {items.length === 0 && query && !loading && !error && (
+                <p className={css.default}>
+                    {`Sorry, there is nothing with the title - ${query}!`}
+                </p>
+            )}
         </div>
     );
 };
+
+export default Movies;

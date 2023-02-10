@@ -1,0 +1,12 @@
+.reviews {
+    padding: 0 15px;
+}
+
+.reviews__title {
+    margin: 15px 0;
+}
+
+.default {
+    font-size: 25px;
+    font-weight: bold;
+}

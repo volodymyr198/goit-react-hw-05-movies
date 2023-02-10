@@ -1,10 +1,16 @@
-import { useNavigate, Link, useParams, Outlet } from 'react-router-dom';
+import {
+    useNavigate,
+    Link,
+    useParams,
+    Outlet,
+    useLocation,
+} from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getlMovieDetails } from 'api/movies';
-import noImage from '../../img/no-image.png';
+import { getMovieDetails } from 'api/movies';
+import noPoster from '../../img/no-poster-available.jpg';
 import css from './MovieDetails.module.css';
 
-export const MovieDetails = () => {
+const MovieDetails = () => {
     const [state, setState] = useState({
         item: {},
         loading: false,
@@ -12,6 +18,8 @@ export const MovieDetails = () => {
     });
     const { movieId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const backLinkHref = location.state?.from ?? '/';
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -19,7 +27,8 @@ export const MovieDetails = () => {
                 setState(prevState => {
                     return { ...prevState, loading: true, error: null };
                 });
-                const result = await getlMovieDetails(movieId);
+                const result = await getMovieDetails(movieId);
+
                 setState(prevState => {
                     return {
                         ...prevState,
@@ -62,13 +71,12 @@ export const MovieDetails = () => {
 
     return (
         <main className={css.details}>
-            {loading && <p>...load details</p>}
-            {error && <p>...Details load filed</p>}
+            {loading && <p className={css.default}>...load details</p>}
+            {error && <p className={css.default}>...Details load filed</p>}
             {!loading && !error && genres && (
                 <>
-                    {/* <Link to="/">Go back</Link> */}
                     <button
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate(backLinkHref)}
                         className={css.details__backBtn}
                     >
                         Go back
@@ -85,7 +93,7 @@ export const MovieDetails = () => {
                         ) : (
                             <img
                                 className={css.details__img}
-                                src={noImage}
+                                src={noPoster}
                                 alt="not available"
                                 width="300px"
                                 height="450px"
@@ -97,7 +105,9 @@ export const MovieDetails = () => {
                                 {original_title} ({getDateMovie(release_date)})
                             </h1>
                             <p>
-                                User Score:{' '}
+                                <span className={css.details__text}>
+                                    User Score:{' '}
+                                </span>
                                 {Math.round(vote_average * 10) ||
                                     'Sorry, nothing found!'}
                                 %
@@ -119,6 +129,7 @@ export const MovieDetails = () => {
                                 <Link
                                     className={css.additional__item}
                                     to="cast"
+                                    state={{ from: backLinkHref }}
                                 >
                                     Cast
                                 </Link>
@@ -126,7 +137,8 @@ export const MovieDetails = () => {
                             <li>
                                 <Link
                                     className={css.additional__item}
-                                    to="reviews "
+                                    to="reviews"
+                                    state={{ from: backLinkHref }}
                                 >
                                     Reviews
                                 </Link>
@@ -139,3 +151,5 @@ export const MovieDetails = () => {
         </main>
     );
 };
+
+export default MovieDetails;

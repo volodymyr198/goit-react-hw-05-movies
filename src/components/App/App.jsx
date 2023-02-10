@@ -1,12 +1,14 @@
 import { NavLink, Route, Routes } from 'react-router-dom';
+import { GiFilmProjector } from 'react-icons/gi';
+import { lazy, Suspense } from 'react';
 
-import { Home } from 'components/Home/Home';
-import { Movies } from 'components/Movies/Movies';
-import { MovieDetails } from 'components/MovieDetails/MovieDetails';
-import { Cast } from 'components/Cast/Cast';
-import { Reviews } from 'components/Reviews/Reviews';
-import { NotFoundPage } from 'components/NotFoundPage/NotFoundPage';
 import css from './App.module.css';
+const Home = lazy(() => import('components/Home/Home'));
+const Movies = lazy(() => import('components/Movies/Movies'));
+const MovieDetails = lazy(() => import('components/MovieDetails/MovieDetails'));
+const Cast = lazy(() => import('components/Cast/Cast'));
+const Reviews = lazy(() => import('components/Reviews/Reviews'));
+const NotFoundPage = lazy(() => import('components/NotFoundPage/NotFoundPage'));
 
 export const App = () => {
     const getClassName = ({ isActive }) => {
@@ -19,6 +21,7 @@ export const App = () => {
         <>
             <header className={css.header}>
                 <nav className={css.navigation}>
+                    <GiFilmProjector className={css.svg} />
                     <NavLink className={getClassName} to="/">
                         Home
                     </NavLink>
@@ -27,16 +30,18 @@ export const App = () => {
                     </NavLink>
                 </nav>
             </header>
-            <Routes>
-                <Route path="/" element={<Home />}></Route>
-                <Route path="/movies" element={<Movies />}></Route>
-                <Route path="/movies/:movieId" element={<MovieDetails />}>
-                    <Route path="cast" element={<Cast />}></Route>
-                    <Route path="reviews" element={<Reviews />}></Route>
-                </Route>
+            <Suspense fallback={<p className={css.default}>...load movies</p>}>
+                <Routes>
+                    <Route path="/" element={<Home />}></Route>
+                    <Route path="/movies" element={<Movies />}></Route>
+                    <Route path="/movies/:movieId" element={<MovieDetails />}>
+                        <Route path="cast" element={<Cast />}></Route>
+                        <Route path="reviews" element={<Reviews />}></Route>
+                    </Route>
 
-                <Route path="*" element={<NotFoundPage />}></Route>
-            </Routes>
+                    <Route path="*" element={<NotFoundPage />}></Route>
+                </Routes>
+            </Suspense>
         </>
     );
 };
