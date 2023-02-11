@@ -5,7 +5,7 @@ import {
     Outlet,
     useLocation,
 } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { getMovieDetails } from 'api/movies';
 import noPoster from '../../img/no-poster-available.jpg';
 import css from './MovieDetails.module.css';
@@ -145,7 +145,11 @@ const MovieDetails = () => {
                             </li>
                         </ul>
                     </div>
-                    <Outlet />
+                    <Suspense
+                        fallback={<p className={css.default}>...load info</p>}
+                    >
+                        <Outlet />
+                    </Suspense>
                 </>
             )}
         </main>
