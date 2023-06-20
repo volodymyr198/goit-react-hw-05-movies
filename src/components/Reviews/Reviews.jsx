@@ -56,7 +56,7 @@ export const Reviews = () => {
                 <p className={css.default}>Sorry, nothing found!</p>
             )}
             {loading && <p className={css.default}>...load Reviews</p>}
-            {error && <p className={css.default}>...Cast load filed</p>}
+            {error && <p className={css.default}>...Reviews load filed</p>}
             {!loading && !error && items && <ul>{elements}</ul>}
         </div>
     );
